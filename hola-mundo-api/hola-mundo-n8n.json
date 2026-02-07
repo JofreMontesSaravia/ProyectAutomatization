@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "08690508-0f4e-48ea-84a3-203eb7726a7a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/todos/1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f0c3dc90-aee8-4e17-80a2-9c61326af799",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n espera que retornes un array de objetos\nreturn items.map(item => {\n  const data = item.json;\n\n  return {\n    json: {\n      id_tarea: data.id,\n      // Pasamos el texto a mayúsculas\n      titulo_limpio: data.title.toUpperCase(),\n      // Lógica: si el ID es menor a 10, es prioridad alta\n      prioridad: data.id < 10 ? 'ALTA' : 'BAJA',\n      // Añadimos metadata técnica\n      procesado_el: new Date().toLocaleString(),\n      fuente: 'API Externa'\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "39b2c653-6e3c-42fe-931a-88023695619e",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "8930d43ae0837f5630edac39fa9cccbb17bfd657838b3f8d9a44f698a30596cd"
+  }
+}
