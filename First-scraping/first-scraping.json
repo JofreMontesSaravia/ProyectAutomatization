@@ -1,0 +1,208 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a6ee1904-beb8-479f-a5eb-c55f026a5966",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://books.toscrape.com/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1309fb77-0df0-4bbb-a293-713f5fc3f88b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "article.product_pod h3 a",
+              "returnArray": true
+            },
+            {
+              "key": "price",
+              "cssSelector": "div.product_price p.price_color",
+              "returnArray": true
+            },
+            {
+              "key": "stock",
+              "cssSelector": "article.product_pod p.instock",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "50d6dd89-f751-413c-8a68-81590ac580cc",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1I4-AA7jrlUaXWApr0iQqB0w2051ECQ6VjbJLKjPxFOo",
+          "mode": "list",
+          "cachedResultName": "Libros",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I4-AA7jrlUaXWApr0iQqB0w2051ECQ6VjbJLKjPxFOo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I4-AA7jrlUaXWApr0iQqB0w2051ECQ6VjbJLKjPxFOo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Titulo": "={{ $json.title }}",
+            "Precio": "={{ $json.price }}",
+            "Stock": "={{ $json.stock }}"
+          },
+          "matchingColumns": [
+            "Titulo"
+          ],
+          "schema": [
+            {
+              "id": "Titulo",
+              "displayName": "Titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Precio",
+              "displayName": "Precio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        0
+      ],
+      "id": "378b1a64-0128-46a2-9081-33b0c5971f9b",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PtNw0qKaQAcErT0V",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "title, price, stock",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "4d4c00d6-fa15-49f7-8ad3-7f49dd2fc439",
+      "name": "Split Out"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8930d43ae0837f5630edac39fa9cccbb17bfd657838b3f8d9a44f698a30596cd"
+  }
+}
